@@ -65,6 +65,7 @@ const Home = () => {
 			status: "success",
 			duration: 1500,
 			isClosable: true,
+			position: "top",
 		});
 	};
 
