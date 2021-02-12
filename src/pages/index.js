@@ -79,7 +79,7 @@ const Home = () => {
 	return (
 		<Flex as="div" className="app">
 			<Head>
-				<title>Create Next App</title>
+				<title>Password Generator</title>
 				<link rel="icon" href="/favicon.ico" />
 				<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png" />
 				<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
