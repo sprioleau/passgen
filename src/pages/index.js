@@ -13,7 +13,6 @@ import {
 	Box,
 	Text,
 	Checkbox,
-	CheckboxGroup,
 	Slider,
 	SliderTrack,
 	SliderFilledTrack,
@@ -31,7 +30,8 @@ const Home = () => {
 	const [length, setLength] = useState(8);
 	const [options, setOptions] = useState({
 		numbers: true,
-		"mixed-case": true,
+		lowercase: true,
+		uppercase: true,
 		"special-characters": true,
 		spaces: false,
 	});
@@ -40,9 +40,11 @@ const Home = () => {
 		successDuration: 1500,
 	});
 
-	// const checkedOptions = Object.entries(options)
-	// 	.filter((option) => option[1] === true)
-	// 	.map((option) => option[0]);
+	const selectedOptions = Object.entries(options).filter((option) => option[1] === true);
+
+	// const checkedOptions = selectedOptions.map((option) => option[0]);
+
+	const spacesIsOnlySelectedOption = selectedOptions.length === 1 && selectedOptions[0][0] === "spaces";
 
 	const handleUpdateOptions = (e) => {
 		const option = e.target.value;
@@ -121,11 +123,14 @@ const Home = () => {
 								</FormControl>
 
 								<Stack mb={4}>
+									<Checkbox value="lowercase" defaultChecked={options["lowercase"]} onChange={handleUpdateOptions}>
+										Lowercase
+									</Checkbox>
+									<Checkbox value="uppercase" defaultChecked={options["uppercase"]} onChange={handleUpdateOptions}>
+										Uppercase
+									</Checkbox>
 									<Checkbox value="numbers" defaultChecked={options["numbers"]} onChange={handleUpdateOptions}>
 										Numbers
-									</Checkbox>
-									<Checkbox value="mixed-case" defaultChecked={options["mixed-case"]} onChange={handleUpdateOptions}>
-										Mixed case
 									</Checkbox>
 									<Checkbox
 										value="special-characters"
@@ -135,7 +140,13 @@ const Home = () => {
 										Special characters
 									</Checkbox>
 									<Checkbox value="spaces" defaultChecked={options["spaces"]} onChange={handleUpdateOptions}>
-										Spaces
+										{spacesIsOnlySelectedOption ? (
+											<Tooltip label="Letters will be added if this is the only option selected" aria-label="A tooltip">
+												Spaces
+											</Tooltip>
+										) : (
+											"Spaces"
+										)}
 									</Checkbox>
 								</Stack>
 								<Text>Length</Text>
