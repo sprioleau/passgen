@@ -1,6 +1,5 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Head from "next/head";
-import useClipboard from "react-use-clipboard";
 import { FiCopy } from "react-icons/fi";
 import {
 	InputGroup,
@@ -23,22 +22,24 @@ import {
 	IconButton,
 } from "@chakra-ui/react";
 
-import { generatePassword } from "../utils/generatePassword";
+import { generatePassword } from "../utils";
+import { GeneratePassowrdOptions } from "../utils/generatePassword";
+
+function copyToClipboard(text: string) {
+	navigator.clipboard.writeText(text);
+}
 
 const Home = () => {
 	const [password, setPassword] = useState("");
 	const [length, setLength] = useState(8);
-	const [options, setOptions] = useState({
+	const [options, setOptions] = useState<GeneratePassowrdOptions>({
 		numbers: true,
 		lowercase: true,
 		uppercase: true,
-		"special-characters": true,
+		special_characters: true,
 		spaces: false,
 	});
 	const toast = useToast();
-	const [isCopied, setCopied] = useClipboard(password, {
-		successDuration: 1500,
-	});
 
 	const selectedOptions = Object.entries(options).filter((option) => option[1] === true);
 
@@ -46,21 +47,22 @@ const Home = () => {
 
 	const spacesIsOnlySelectedOption = selectedOptions.length === 1 && selectedOptions[0][0] === "spaces";
 
-	const handleUpdateOptions = (e) => {
-		const option = e.target.value;
-		setOptions({ ...options, [option]: !options[option] });
+	const handleUpdateOptions = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const option = e.target.value as keyof GeneratePassowrdOptions;
+		setOptions((previousOptions) => ({ ...previousOptions, [option]: !options[option] }));
 	};
 
-	const handleChangePassword = (e) => {
+	const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value);
 	};
 
-	const handleChangeLength = (value) => {
+	const handleChangeLength = (value: number) => {
 		setLength(value);
+		setPassword(generatePassword(length, options));
 	};
 
 	const handleShowToast = () => {
-		setCopied();
+		copyToClipboard(password);
 		toast({
 			title: "Whoo hoo!",
 			description: "Successfully copied password to clipboard",
@@ -71,7 +73,7 @@ const Home = () => {
 		});
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setPassword(generatePassword(length, options));
 	};
@@ -91,7 +93,7 @@ const Home = () => {
 			</Head>
 
 			<Flex direction="column" justify="space-between" height="100vh" width="100%" my={12}>
-				<Container as="section" width="100%" maxW={600} px={8} py={12} boxShadow="xl" p="6" rounded="lg">
+				<Container as="section" width="100%" maxW={450} px={8} py={12} boxShadow="xl" p="6" rounded="lg">
 					<Flex as="main">
 						<form onSubmit={handleSubmit} style={{ width: "100%" }}>
 							<Stack spacing={4}>
@@ -123,23 +125,23 @@ const Home = () => {
 								</FormControl>
 
 								<Stack mb={4}>
-									<Checkbox value="lowercase" defaultChecked={options["lowercase"]} onChange={handleUpdateOptions}>
+									<Checkbox value="lowercase" defaultChecked={options.lowercase} onChange={handleUpdateOptions}>
 										Lowercase
 									</Checkbox>
-									<Checkbox value="uppercase" defaultChecked={options["uppercase"]} onChange={handleUpdateOptions}>
+									<Checkbox value="uppercase" defaultChecked={options.uppercase} onChange={handleUpdateOptions}>
 										Uppercase
 									</Checkbox>
-									<Checkbox value="numbers" defaultChecked={options["numbers"]} onChange={handleUpdateOptions}>
+									<Checkbox value="numbers" defaultChecked={options.numbers} onChange={handleUpdateOptions}>
 										Numbers
 									</Checkbox>
 									<Checkbox
-										value="special-characters"
-										defaultChecked={options["special-characters"]}
+										value="special_characters"
+										defaultChecked={options.special_characters}
 										onChange={handleUpdateOptions}
 									>
 										Special characters
 									</Checkbox>
-									<Checkbox value="spaces" defaultChecked={options["spaces"]} onChange={handleUpdateOptions}>
+									<Checkbox value="spaces" defaultChecked={options.spaces} onChange={handleUpdateOptions}>
 										{spacesIsOnlySelectedOption ? (
 											<Tooltip label="Letters will be added if this is the only option selected" aria-label="A tooltip">
 												Spaces
